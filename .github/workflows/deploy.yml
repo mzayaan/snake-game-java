@@ -29,7 +29,18 @@ jobs:
       # .jpg throws UnsatisfiedLinkError. PNG decoding is pure Java, so the
       # background is converted for the web build.
       - name: Convert background to PNG
-        run: convert SnakeGraphics.jpg SnakeGraphics.png
+        run: |
+          cat > Convert.java <<'EOF'
+          import javax.imageio.ImageIO;
+          import java.io.File;
+          public class Convert {
+            public static void main(String[] a) throws Exception {
+              ImageIO.write(ImageIO.read(new File(a[0])), "png", new File(a[1]));
+            }
+          }
+          EOF
+          java Convert.java SnakeGraphics.jpg SnakeGraphics.png
+          ls -la SnakeGraphics.png
 
       # Relative paths don't resolve inside CheerpJ's virtual filesystem, so
       # they're rewritten for the web build only. The committed source is left
