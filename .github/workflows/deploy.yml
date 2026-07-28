@@ -25,15 +25,21 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      # The game uses relative paths, which don't resolve inside CheerpJ's
-      # virtual filesystem. Rewrite them for the web build only — the committed
-      # source is left untouched so the desktop version still works as-is.
-      #   /app/   is the read-only mount of this site's files
-      #   /files/ is the writable, IndexedDB-backed area
+      # CheerpJ ships no native JPEG decoder (libjavajpeg), so ImageIcon on a
+      # .jpg throws UnsatisfiedLinkError. PNG decoding is pure Java, so the
+      # background is converted for the web build.
+      - name: Convert background to PNG
+        run: convert SnakeGraphics.jpg SnakeGraphics.png
+
+      # Relative paths don't resolve inside CheerpJ's virtual filesystem, so
+      # they're rewritten for the web build only. The committed source is left
+      # untouched, so the desktop version still works as-is.
+      #   /app/<repo>/ is the read-only mount of this site's files
+      #   /files/      is the writable, IndexedDB-backed area
       - name: Patch file paths for the browser build
         run: |
           mkdir -p src
-          sed -e 's#new ImageIcon("SnakeGraphics.jpg")#new ImageIcon("/app/${{ github.event.repository.name }}/SnakeGraphics.jpg")#' \
+          sed -e 's#new ImageIcon("SnakeGraphics.jpg")#new ImageIcon("/app/${{ github.event.repository.name }}/SnakeGraphics.png")#' \
               -e 's#new FileWriter("leaderboard.txt"#new FileWriter("/files/leaderboard.txt"#' \
               SnakeGame.java > src/SnakeGame.java
           grep -n '/app/\|/files/' src/SnakeGame.java
@@ -49,7 +55,7 @@ jobs:
           mkdir -p site
           cp web/index.html site/
           cp snake-game.jar site/
-          cp SnakeGraphics.jpg site/
+          cp SnakeGraphics.png site/
           ls -la site
 
       - uses: actions/configure-pages@v5
