@@ -51,7 +51,7 @@
       (async () => {
         const status = document.getElementById('status');
         try {
-          await cheerpjInit();
+          await cheerpjInit({ version: 17 });
           cheerpjCreateDisplay(650, 650, document.getElementById('display'));
           status.textContent = 'Click the game, then use the arrow keys.';
           const base = location.pathname.replace(/index\.html$/, '');
