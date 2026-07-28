@@ -33,7 +33,7 @@ jobs:
       - name: Patch file paths for the browser build
         run: |
           mkdir -p src
-          sed -e 's#new ImageIcon("SnakeGraphics.jpg")#new ImageIcon("/app/SnakeGraphics.jpg")#' \
+          sed -e 's#new ImageIcon("SnakeGraphics.jpg")#new ImageIcon("/app/${{ github.event.repository.name }}/SnakeGraphics.jpg")#' \
               -e 's#new FileWriter("leaderboard.txt"#new FileWriter("/files/leaderboard.txt"#' \
               SnakeGame.java > src/SnakeGame.java
           grep -n '/app/\|/files/' src/SnakeGame.java

@@ -54,7 +54,8 @@
           await cheerpjInit();
           cheerpjCreateDisplay(650, 650, document.getElementById('display'));
           status.textContent = 'Click the game, then use the arrow keys.';
-          await cheerpjRunJar('/app/snake-game.jar');
+          const base = location.pathname.replace(/index\.html$/, '');
+          await cheerpjRunJar('/app' + base + 'snake-game.jar');
         } catch (err) {
           status.textContent = 'Could not start the game: ' + err;
         }
