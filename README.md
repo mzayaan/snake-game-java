@@ -1,124 +1,62 @@
-<div id="top">
+# Snake
 
-<!-- HEADER STYLE: CLASSIC -->
-<div align="center">
+Classic Snake, written in Java with Swing. Built as a team project for the
+BSc (Hons) Software Engineering programme at the University of Technology,
+Mauritius, applying object-oriented design.
 
+**▶ [Play it in your browser](https://mzayaan.github.io/snake-game-java/)** — no
+install needed. The Java bytecode runs client-side through
+[CheerpJ](https://cheerpj.com/), so the first load pulls down a JVM and takes a
+few seconds.
 
-# SNAKE-GAME-JAVA
+## Gameplay
 
-<em>Master the Classic, Elevate Your Coding Skills</em>
+- Arrow keys to steer.
+- Eat food to grow and score.
+- Avoid bombs and your own tail.
+- Scores append to a leaderboard file.
 
-<!-- BADGES -->
-<img src="https://img.shields.io/github/last-commit/mzayaan/snake-game-java?style=flat&logo=git&logoColor=white&color=0080ff" alt="last-commit">
-<img src="https://img.shields.io/github/languages/top/mzayaan/snake-game-java?style=flat&color=0080ff" alt="repo-top-language">
-<img src="https://img.shields.io/github/languages/count/mzayaan/snake-game-java?style=flat&color=0080ff" alt="repo-language-count">
+## How it's put together
 
-<em>Built with the tools and technologies:</em>
+One source file, `SnakeGame.java`, holding a handful of focused classes:
 
-<img src="https://img.shields.io/badge/Markdown-000000.svg?style=flat&logo=Markdown&logoColor=white" alt="Markdown">
+| Class | Responsibility |
+| --- | --- |
+| `SnakeGame` | Entry point, window setup, shared constants |
+| `GamePanel` | Render loop, input handling, collision and game state |
+| `Snake` | Body segments, movement, growth |
+| `Food` | Spawn position and scoring value |
+| `Bomb` | Hazard placement |
+| `Score` | Score tracking and leaderboard writing |
 
-</div>
-<br>
+Grid is 25 px cells in a 650 × 650 window.
 
----
+## Run it on your machine
 
-## Table of Contents
+Needs a JDK (17 or newer). No build tool, no dependencies.
 
-- [Overview](#overview)
-- [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-    - [Usage](#usage)
-    - [Testing](#testing)
-
----
-
-## Overview
-
-Snake-game-java is a complete Java-based implementation of the classic Snake game, crafted for developers to learn, customize, and extend with ease. It combines core gameplay mechanics, visual rendering, and performance tracking into a cohesive project suitable for both educational and development purposes.
-
-**Why snake-game-java?**
-
-This project provides a solid foundation for building engaging Snake games in Java. The core features include:
-
-- 🎮 **🧩 Modular Design:** Clear separation of game logic, rendering, and input handling makes customization straightforward.
-- 🥇 **Leaderboard Integration:** Efficiently tracks and ranks player scores to foster competitive gameplay.
-- 🚀 **Core Gameplay Mechanics:** Manages snake movement, collision detection, and game state transitions seamlessly.
-- 🎯 **User Interaction & Visuals:** Handles user input and renders game elements like snake, food, and bombs for an immersive experience.
-- 🔧 **Extensible Architecture:** Facilitates easy enhancements and feature additions for developers aiming to expand the game.
-
----
-
-## Getting Started
-
-### Prerequisites
-
-This project requires the following dependencies:
-
-- **Programming Language:** Java
-- **Package Manager:** Maven
-
-### Installation
-
-Build snake-game-java from the source and install dependencies:
-
-1. **Clone the repository:**
-
-    ```sh
-    ❯ git clone https://github.com/mzayaan/snake-game-java
-    ```
-
-2. **Navigate to the project directory:**
-
-    ```sh
-    ❯ cd snake-game-java
-    ```
-
-3. **Install the dependencies:**
-
-**Using [maven](https://maven.apache.org/):**
-
-```sh
-❯ mvn install
-```
-**Using [maven](https://maven.apache.org/):**
-
-```sh
-❯ mvn install
+```bash
+git clone https://github.com/mzayaan/snake-game-java
+cd snake-game-java
+javac SnakeGame.java
+java SnakeGame
 ```
 
-### Usage
+Run it from the project directory so `SnakeGraphics.jpg` and `leaderboard.txt`
+resolve.
 
-Run the project with:
+## Deployment
 
-**Using [maven](https://maven.apache.org/):**
+`.github/workflows/deploy.yml` compiles the source, packages a runnable
+`snake-game.jar`, and publishes it to GitHub Pages alongside `web/index.html`,
+which boots the JAR with CheerpJ.
 
-```sh
-mvn exec:java
-```
-**Using [maven](https://maven.apache.org/):**
+The browser build rewrites two file paths at compile time, because relative
+paths don't resolve inside CheerpJ's virtual filesystem:
 
-```sh
-mvn exec:java
-```
+| Source | Browser build | Why |
+| --- | --- | --- |
+| `SnakeGraphics.jpg` | `/app/snake-game-java/SnakeGraphics.jpg` | `/app/` is the read-only mount of the site |
+| `leaderboard.txt` | `/files/leaderboard.txt` | `/files/` is writable, backed by IndexedDB |
 
-### Testing
-
-Snake-game-java uses the {__test_framework__} test framework. Run the test suite with:
-
-**Using [maven](https://maven.apache.org/):**
-
-```sh
-mvn test
-```
-**Using [maven](https://maven.apache.org/):**
-
-```sh
-mvn test
-```
-
----
-
-<div align="left"><a href="#top">⬆ Return</a></div>
-
----
+The committed source is untouched, so the desktop version still runs unchanged.
