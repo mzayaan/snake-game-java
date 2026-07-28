@@ -1,0 +1,68 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # The game uses relative paths, which don't resolve inside CheerpJ's
+      # virtual filesystem. Rewrite them for the web build only — the committed
+      # source is left untouched so the desktop version still works as-is.
+      #   /app/   is the read-only mount of this site's files
+      #   /files/ is the writable, IndexedDB-backed area
+      - name: Patch file paths for the browser build
+        run: |
+          mkdir -p src
+          sed -e 's#new ImageIcon("SnakeGraphics.jpg")#new ImageIcon("/app/SnakeGraphics.jpg")#' \
+              -e 's#new FileWriter("leaderboard.txt"#new FileWriter("/files/leaderboard.txt"#' \
+              SnakeGame.java > src/SnakeGame.java
+          grep -n '/app/\|/files/' src/SnakeGame.java
+
+      - name: Compile and package
+        run: |
+          mkdir -p classes
+          javac -d classes src/SnakeGame.java
+          jar --create --file snake-game.jar --main-class SnakeGame -C classes .
+
+      - name: Assemble site
+        run: |
+          mkdir -p site
+          cp web/index.html site/
+          cp snake-game.jar site/
+          cp SnakeGraphics.jpg site/
+          ls -la site
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Snake — Java in the browser</title>
+    <meta
+      name="description"
+      content="Classic Snake built in Java, running unmodified in the browser via CheerpJ."
+    />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        background: #0c0c0c;
+        color: #d7e2ea;
+        font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        padding: 24px 16px;
+      }
+      h1 { font-size: clamp(1.4rem, 4vw, 2.2rem); font-weight: 800; letter-spacing: -0.02em; }
+      p { opacity: 0.55; font-size: 0.9rem; text-align: center; max-width: 46ch; line-height: 1.6; }
+      #display {
+        width: 650px; height: 650px; max-width: 100%;
+        border: 2px solid rgba(215, 226, 234, 0.25);
+        border-radius: 18px; overflow: hidden; background: #000;
+      }
+      #status { font-size: 0.85rem; opacity: 0.6; min-height: 1.2em; }
+      a { color: #d7e2ea; opacity: 0.6; font-size: 0.8rem; }
+      a:hover { opacity: 1; }
+    </style>
+  </head>
+  <body>
+    <h1>Snake</h1>
+    <p>
+      Written in Java with Swing, running unmodified in your browser through
+      CheerpJ. The runtime downloads on first load, so give it a moment. Use the
+      arrow keys.
+    </p>
+
+    <div id="display"></div>
+    <div id="status">Loading the Java runtime…</div>
+    <a href="https://github.com/mzayaan/snake-game-java">View source on GitHub</a>
+
+    <script src="https://cjrtnc.leaningtech.com/4.2/loader.js"></script>
+    <script>
+      (async () => {
+        const status = document.getElementById('status');
+        try {
+          await cheerpjInit();
+          cheerpjCreateDisplay(650, 650, document.getElementById('display'));
+          status.textContent = 'Click the game, then use the arrow keys.';
+          await cheerpjRunJar('/app/snake-game.jar');
+        } catch (err) {
+          status.textContent = 'Could not start the game: ' + err;
+        }
+      })();
+    </script>
+  </body>
+</html>
